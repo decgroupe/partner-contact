@@ -7,12 +7,19 @@ from odoo import api, fields, models
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
+    def _default_is_customer(self):
+        return self.env.context.get("res_partner_search_mode") == "customer"
+
+    def _default_is_supplier(self):
+        return self.env.context.get("res_partner_search_mode") == "supplier"
+
     is_customer = fields.Boolean(
         compute="_compute_is_customer",
         inverse="_inverse_is_customer",
         store=True,
         readonly=False,
         string="Is a Customer",
+        default=_default_is_customer,
     )
     is_supplier = fields.Boolean(
         compute="_compute_is_supplier",
@@ -20,6 +27,7 @@ class ResPartner(models.Model):
         store=True,
         readonly=False,
         string="Is a Supplier",
+        default=_default_is_supplier,
     )
 
     @api.depends("customer_rank")
